@@ -1,0 +1,45 @@
+bin_PROGRAMS += bench/bench_omnicoin
+BENCH_SRCDIR = bench
+BENCH_BINARY = bench/bench_omnicoin$(EXEEXT)
+
+
+bench_bench_omnicoin_SOURCES = \
+  bench/bench_omnicoin.cpp \
+  bench/bench.cpp \
+  bench/bench.h \
+  bench/Examples.cpp
+
+bench_bench_omnicoin_CPPFLAGS = $(AM_CPPFLAGS) $(OMNICOIN_INCLUDES) $(EVENT_CLFAGS) $(EVENT_PTHREADS_CFLAGS) -I$(builddir)/bench/
+bench_bench_omnicoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+bench_bench_omnicoin_LDADD = \
+  $(LIBOMNICOIN_SERVER) \
+  $(LIBOMNICOIN_COMMON) \
+  $(LIBOMNICOIN_UNIVALUE) \
+  $(LIBOMNICOIN_UTIL) \
+  $(LIBOMNICOIN_CRYPTO) \
+  $(LIBLEVELDB) \
+  $(LIBMEMENV) \
+  $(LIBSECP256K1)
+
+if ENABLE_ZMQ
+bench_bench_omnicoin_LDADD += $(LIBOMNICOIN_ZMQ) $(ZMQ_LIBS)
+endif
+
+if ENABLE_WALLET
+bench_bench_omnicoin_LDADD += $(LIBOMNICOIN_WALLET)
+endif
+
+bench_bench_omnicoin_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
+bench_bench_omnicoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+
+CLEAN_OMNICOIN_BENCH = bench/*.gcda bench/*.gcno
+
+CLEANFILES += $(CLEAN_OMNICOIN_BENCH)
+
+omnicoin_bench: $(BENCH_BINARY)
+
+bench: $(BENCH_BINARY) FORCE
+	$(BENCH_BINARY)
+
+omnicoin_bench_clean : FORCE
+	rm -f $(CLEAN_OMNICOIN_BENCH) $(bench_bench_omnicoin_OBJECTS) $(BENCH_BINARY)

@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[omnicoin.qt-translation-012x]
+file_filter = src/qt/locale/omnicoin_<lang>.ts
+source_file = src/qt/locale/omnicoin_en.ts
+source_lang = en
